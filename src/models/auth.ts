@@ -1,7 +1,9 @@
+import { UserRole } from "@prisma/client";
 import { JWTPayload } from "hono/utils/jwt/types";
 import { z } from "zod";
 
 export const SignUpSchema = z.object({
+  role: z.nativeEnum(UserRole),
   email: z.string().email(),
   password: z.string().min(6),
   name: z.string(),

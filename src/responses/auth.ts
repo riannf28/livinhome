@@ -8,3 +8,8 @@ export type AuthSignInUsecaseResponse = {
   accessToken: string;
   refreshToken: string;
 };
+
+export type AuthSignUpUsecaseResponse = {
+  id: string;
+  createdAt: Date;
+};

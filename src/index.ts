@@ -13,10 +13,11 @@ app.get("/", (c) => {
   return c.text("Hello Hono!");
 });
 
-const port = 3000;
+const port = process.env.PORT || 8080;
 console.log(`Server is running on port ${port}`);
 
 serve({
   fetch: app.fetch,
-  port,
+  hostname: "0.0.0.0",
+  port: Number(port),
 });
