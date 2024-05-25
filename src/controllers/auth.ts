@@ -48,7 +48,7 @@ authController.post("/signup", zValidator("json", SignUpSchema), async (c) => {
   return c.json(result, { status: 201 });
 });
 
-authController.use(jwtRefreshMiddleware).post("/refresh", async (c) => {
+authController.post("/refresh", jwtRefreshMiddleware, async (c) => {
   const jwtPayload: JwtPayload = c.get("jwtPayload");
 
   const {
@@ -71,4 +71,8 @@ authController.use(jwtRefreshMiddleware).post("/refresh", async (c) => {
   const result = await generateTokenUsecase(jwtPayload, jwtOptions);
 
   return c.json(result, { status: 201 });
+});
+
+authController.get("/me", authenticated, async (c) => {
+  return c.json(c.get("jwtPayload"));
 });
