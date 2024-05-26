@@ -1,11 +1,10 @@
 services:
   db:
     container_name: dev-db
-    image: mysql:latest
+    image: postgres:latest
     environment:
-      MYSQL_ROOT_PASSWORD: root
-      MYSQL_DATABASE: dev
-      MYSQL_USER: dev
-      MYSQL_PASSWORD: dev
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: root
+      POSTGRES_DB: dev
     ports:
-      - "3306:3306"
+      - "5432:5432"
