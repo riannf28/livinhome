@@ -9,7 +9,7 @@ generator client {
 }
 
 datasource db {
-  provider = "mysql"
+  provider = "postgresql"
   url      = env("DATABASE_URL")
 }
 
@@ -19,11 +19,150 @@ enum UserRole {
 }
 
 model User {
-  id        String   @id @default(cuid())
-  email     String   @unique
-  password  String
-  name      String
-  role      UserRole
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  id           String            @id @default(cuid())
+  email        String            @unique
+  password     String
+  name         String
+  role         UserRole
+  properties   Property[]        @relation("PropertyOwner")
+  tenants      Property[]        @relation("PropertyTenants")
+  bankAccounts UserBankAccount[]
+  createdAt    DateTime          @default(now())
+  updatedAt    DateTime          @updatedAt
+}
+
+model UserBankAccount {
+  id String @id @default(cuid())
+
+  bankName  String // Nama Bank
+  accountNo String // Rekening
+
+  owner               User       @relation(fields: [ownerId], references: [id])
+  ownerId             String
+  connectedProperties Property[]
+}
+
+enum PropertyRentForGender {
+  MALE
+  FEMALE
+  BOTH
+}
+
+enum PropertyRules {
+  NO_GENDER_MIXING // Tidak Boleh membawa lawan jenis ke dalam kamar
+  STUDENT_ONLY // Hanya untuk Mahasiswa
+  EMPLOYEE_ONLY // Hanya untuk Karyawans
+  NO_PETS // Tidak Boleh membawa hewan peliharaan
+  NO_SMOKING_IN_ROOM // Tidak Boleh Merokok di dalam Kamar
+  MAX_1_OCCUPANT_PER_ROOM // Maksimal 1 Penghuni per Kamar
+  MAX_2_OCCUPANT_PER_ROOM // Maksimal 2 Penghuni per Kamar
+  MAX_3_OCCUPANT_PER_ROOM // Maksimal 3 Penghuni per Kamar
+  DAMAGES_FINE_BY_TENANT // Denda Kerusakan oleh Penghuni
+  NIGHT_TIME_FOR_GUEST // Waktu Malam untuk Tamu
+  NO_GUEST // Tidak Boleh membawa Tamu
+  MARRIED_COUPLE_REQUIRE_MARRIAGE_CERTIFICATE // Pasangan Suami Istri harus membawa Surat Nikah
+  NO_CHILDREN // Tidak Boleh membawa Anak
+}
+
+model PropertyAddress {
+  id          String  @id @default(cuid())
+  province    String
+  city        String
+  district    String
+  village     String
+  addressNote String?
+
+  property Property?
+}
+
+model PropertyPhotos {
+  id String @id @default(cuid())
+
+  exteriorPhotoKeys    String[]
+  interiorPhotoKeys    String[]
+  surroundingPhotoKeys String[]
+
+  property Property?
+}
+
+enum PropertySpecificationFacilityStatus {
+  FURNISHED
+  SEMI_FURNISHED
+  UNFURNISHED
+}
+
+enum PropertySpecificationWaterSource {
+  PDAM
+  GROUND_WATER
+  WELL
+  OTHER
+}
+
+model PropertySpecifications {
+  id             String                              @id @default(cuid())
+  facilityStatus PropertySpecificationFacilityStatus
+  landArea       Float
+  buildingArea   Float
+  electricity    Int
+  waterSource    PropertySpecificationWaterSource
+
+  bedroom     Int
+  hasBed      Boolean @default(false)
+  hasWardrobe Boolean @default(false)
+  hasDesk     Boolean @default(false)
+
+  bathroom        Int
+  hasShower       Boolean @default(false)
+  isSittingToilet Boolean @default(false)
+  hasBucket       Boolean @default(false)
+
+  hasKitchen    Boolean @default(false)
+  hasGarage     Boolean @default(false)
+  hasWarehouse  Boolean @default(false)
+  hasBalcony    Boolean @default(false)
+  hasDryYard    Boolean @default(false)
+  hasLivingRoom Boolean @default(false)
+  hasDiningRoom Boolean @default(false)
+  hasFamilyRoom Boolean @default(false)
+
+  property Property?
+}
+
+model PropertyPricingPlans {
+  id String @id @default(cuid())
+
+  minimumStayMonth Int // Minimal Sewa dalam Bulan
+  annualPrice      Int // Harga Sewa Pertahun
+  additionalCost   Int? // Biaya Tambahan
+
+  property Property?
+}
+
+model Property {
+  id               String                @id @default(cuid())
+  name             String
+  description      String
+  buildingAge      Int // Umur Bangunan atau Terakhir Renovasi
+  enableLivinmates Boolean
+  rentForGender    PropertyRentForGender
+  rules            PropertyRules[]
+
+  pricingPlans   PropertyPricingPlans @relation(fields: [pricingPlansId], references: [id])
+  pricingPlansId String               @unique
+
+  specifications   PropertySpecifications @relation(fields: [specificationsId], references: [id])
+  specificationsId String                 @unique
+
+  photos   PropertyPhotos @relation(fields: [photosId], references: [id])
+  photosId String         @unique
+
+  address   PropertyAddress @relation(fields: [addressId], references: [id])
+  addressId String          @unique
+
+  owner              User             @relation("PropertyOwner", fields: [ownerId], references: [id])
+  ownerId            String
+  ownerBankAccount   UserBankAccount? @relation(fields: [ownerBankAccountId], references: [id])
+  ownerBankAccountId String?
+
+  tenants User[] @relation("PropertyTenants")
 }
