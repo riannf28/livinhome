@@ -1,12 +1,20 @@
+import { UserRole } from "@prisma/client";
+
 export type AuthGenerateTokenResponse = {
   accessToken: string;
   refreshToken: string;
 };
 
 export type AuthSignInUsecaseResponse = {
-  id: string;
-  accessToken: string;
-  refreshToken: string;
+  user: {
+    id: string;
+    name: string;
+    role: UserRole;
+  };
+  token: {
+    accessToken: string;
+    refreshToken: string;
+  };
 };
 
 export type AuthSignUpUsecaseResponse = {

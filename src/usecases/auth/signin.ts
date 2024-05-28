@@ -13,7 +13,13 @@ export const signInUsecase = async (
     where: { email: dto.email },
     select: {
       id: true,
+      role: true,
       password: true,
+      profile: {
+        select: {
+          name: true,
+        },
+      },
     },
   });
 
@@ -26,13 +32,19 @@ export const signInUsecase = async (
     throw new HTTPException(401, { message: "Email atau password salah" });
 
   const { accessToken, refreshToken } = await generateTokenUsecase(
-    { sub: user.id },
+    { sub: user.id, role: user.role },
     jwtOptions
   );
 
   return {
-    id: user.id,
-    accessToken,
-    refreshToken,
+    user: {
+      id: user.id,
+      name: user.profile.name,
+      role: user.role,
+    },
+    token: {
+      accessToken,
+      refreshToken,
+    },
   };
 };

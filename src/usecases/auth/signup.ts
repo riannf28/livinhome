@@ -20,8 +20,15 @@ export const signUpUsecase = async (
     data: {
       email: dto.email,
       role: dto.role,
-      name: dto.name,
       password: hashedPassword,
+      profile: {
+        create: {
+          name: dto.name,
+          gender: dto.gender,
+          phone: dto.phone,
+          birthDate: dto.birthDate,
+        },
+      },
     },
   });
 
