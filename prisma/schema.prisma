@@ -18,11 +18,26 @@ enum UserRole {
   TENANT
 }
 
+enum UserGender {
+  MALE
+  FEMALE
+}
+
+model UserProfile {
+  id        String     @id @default(cuid())
+  name      String
+  gender    UserGender
+  birthDate DateTime
+  phone     String
+  user      User?
+}
+
 model User {
   id           String            @id @default(cuid())
   email        String            @unique
   password     String
-  name         String
+  profile      UserProfile       @relation(fields: [profileId], references: [id])
+  profileId    String            @unique
   role         UserRole
   properties   Property[]        @relation("PropertyOwner")
   tenants      Property[]        @relation("PropertyTenants")
@@ -65,12 +80,12 @@ enum PropertyRules {
 }
 
 model PropertyAddress {
-  id          String  @id @default(cuid())
-  province    String
-  city        String
-  district    String
-  village     String
-  addressNote String?
+  id              String  @id @default(cuid())
+  province        String // Provinsi
+  city            String // Kota
+  village         String // Kelurahan
+  completeAddress String
+  addressNote     String?
 
   property Property?
 }
@@ -165,4 +180,10 @@ model Property {
   ownerBankAccountId String?
 
   tenants User[] @relation("PropertyTenants")
+
+  isRentable Boolean   @default(true)
+  rentableAt DateTime
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  deletedAt  DateTime?
 }
