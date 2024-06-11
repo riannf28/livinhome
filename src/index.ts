@@ -6,6 +6,7 @@ import { logger } from "hono/logger";
 import { propertiesController } from "./controllers/properties";
 import { checkBucket } from "./lib/minio";
 import { prisma } from "./lib/prisma";
+import { usersController } from "./controllers/users";
 
 const app = new Hono().basePath("/v1");
 
@@ -13,6 +14,7 @@ app.use(logger());
 
 app.route("/auth", authController);
 app.route("/properties", propertiesController);
+app.route("/users", usersController);
 
 showRoutes(app, {
   verbose: true,

@@ -98,7 +98,11 @@ export const getPropertyById = async (propertyId: string) => {
       pricingPlans: true,
       photos: true,
       specifications: true,
-      owner: true,
+      owner: {
+        include: {
+          profile: true,
+        },
+      },
     },
   });
 };

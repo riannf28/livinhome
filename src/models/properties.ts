@@ -16,7 +16,7 @@ export const CreatePropertySchema = zfd.formData({
   rentableAt: zfd.text(z.string().transform((v) => new Date(v))).pipe(z.date()),
   rentForGender: zfd.text(z.nativeEnum(PropertyRentForGender)),
   description: zfd.text(),
-  rules: zfd.text(z.array(z.nativeEnum(PropertyRules))),
+  rules: zfd.repeatable(z.array(z.nativeEnum(PropertyRules))),
   enableLivinmates: FormTextBoolSchema,
 
   province: zfd.text(),
@@ -91,6 +91,8 @@ export type PropertyDetails = {
     interior: string[];
     exterior: string[];
     surrounding: string[];
+    bedrooms: string[];
+    bathrooms: string[];
   };
   rentableAt: Date;
   owner: {
@@ -106,7 +108,20 @@ export const PropertyFileSection = {
   INTERIOR: "interior",
   EXTERIOR: "exterior",
   SURROUNDING: "surrounding",
+  BATHROOMS: "bathrooms",
+  BEDROOMS: "bedrooms",
 } as const;
 
 export type PropertyFileSection =
   (typeof PropertyFileSection)[keyof typeof PropertyFileSection];
+
+export const AddPropertyPhotosSchema = zfd.formData({
+  propertyId: zfd.text(),
+  interior: zfd.repeatable(z.array(zfd.file()).min(1)),
+  exterior: zfd.repeatable(z.array(zfd.file()).min(1)),
+  surrounding: zfd.repeatable(z.array(zfd.file()).min(1)),
+  bathrooms: zfd.repeatable(z.array(zfd.file()).min(1)),
+  bedrooms: zfd.repeatable(z.array(zfd.file()).min(1)),
+});
+
+export type AddPropertyPhotosDTO = z.infer<typeof AddPropertyPhotosSchema>;

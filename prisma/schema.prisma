@@ -5,7 +5,8 @@
 // Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
 
 generator client {
-  provider = "prisma-client-js"
+  provider        = "prisma-client-js"
+  previewFeatures = ["omitApi"]
 }
 
 datasource db {
@@ -96,6 +97,8 @@ model PropertyPhotos {
   exteriorPhotoKeys    String[]
   interiorPhotoKeys    String[]
   surroundingPhotoKeys String[]
+  bathroomsPhotoKeys   String[]
+  bedroomsPhotoKeys    String[]
 
   property Property?
 }
